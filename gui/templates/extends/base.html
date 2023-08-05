@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    {% block title %}{% endblock title %}
+    {% include "include/link.html" %}
+</head>
+<body>
+    {% include "include/preloader.html" %}
+
+    <div id="wrapper">
+
+        <!-- ============================================================== -->
+        <!-- Page Content -->
+        <!-- ============================================================== -->
+        <div id="page-wrapper">
+            <div class="container-fluid">
+                {% block content %}{% endblock content %}
+            </div>
+            <!-- /.container-fluid -->
+            {% include "include/footer.html" %}
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Page Content -->
+        <!-- ============================================================== -->
+    </div>
+</body>
+{% include "include/script.html" %}
+ {% block additional %}{% endblock additional %}
+</html>

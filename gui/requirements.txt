@@ -1,0 +1,13 @@
+asgiref==3.3.4
+beautifulsoup4==4.9.3
+Django==3.2.2
+numpy==1.20.2
+pandas==1.2.4
+patsy==0.5.1
+python-dateutil==2.8.1
+pytz==2021.1
+scipy==1.6.3
+six==1.16.0
+soupsieve==2.2.1
+sqlparse==0.4.1
+statsmodels==0.12.2

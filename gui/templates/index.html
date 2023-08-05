@@ -1,0 +1,179 @@
+{% extends "extends/base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>GUI Holt Winters</title>
+{% endblock title %}
+
+{% block content %}
+
+<div class="row" onload="myfunction()">
+
+    <!-- MAIN VIEW -->
+
+    <div class="col-md-3"></div>
+   <div class="col-md-6">
+        <div class="white-box">
+            <div class="row">
+                <h3 class="box-title m-b-0">GUI Holt Winters</h3>
+                <p class="text-muted m-b-30 font-13"> Peramalan Kasus Covid-19 menggunakan Metode <i>Holt-Winters</i> </p>
+                <form id="formUpload" class="form-horizontal" action="." method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- INPUT DATASET -->
+                    <div class="form-group col-sm-12">
+                        <label class="col-sm-12">Upload File Dataset <sub>.csv</sub></label>
+                        <div class="col-sm-12">
+                            <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+                                <div class="form-control" data-trigger="fileinput"> <i class="glyphicon glyphicon-file fileinput-exists"></i> <span class="fileinput-filename"></span></div> <span class="input-group-addon btn btn-default btn-file"> <span class="fileinput-new">Select file</span> <span class="fileinput-exists">Change</span>
+                                <input id="inputDataset" type="file" name="inputDataset" accept=".csv"> </span> <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a> </div>
+                        </div>
+                    </div>
+
+                    <!-- PARAMETER TREND SEASON -->
+                    <div class="col-sm-12">
+                         <!-- INPUT PARAMETER TREND -->
+                        <div class="col-sm-5">
+                    <div class="form-group">
+                        <label class="control-label">Trend</label>
+                            <select class="form-control" name="trend" id="trend">
+                                <option value="add" selected>Pilih Parameter</option>
+                                <option value="add">Additive</option>
+                                <option value="mul">Multiplicative</option>
+                            </select>
+                    </div>
+                        </div>
+
+                        <div class="col-sm-1"></div>
+
+                        <!-- INPUT PARAMETER SEASON -->
+                        <div class="col-sm-5">
+                    <div class="form-group">
+                        <label class="control-label">Season</label>
+                            <select class="form-control" name="season" id="season">
+                                <option value="add" selected>Pilih Parameter</option>
+                                <option value="add">Additive</option>
+                                <option value="mul">Multiplicative</option>
+                            </select>
+                    </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- SMOOTHING -->
+                    <div class="col-sm-12">
+                        <!-- INPUT PARAMETER SMOOTHING ALPHA -->
+                    <div class="col-sm-3">
+                         <div class="form-group">
+                             <label class="control-label">Smoothing Alpha</label>
+                             <input value="0" type="number" name="alpha" id="alpha" class="form-control" min="0" max="1" step="0.01" placeholder="0">
+                         </div>
+                     </div>
+                    <div class="col-sm-1"></div>
+
+                        <!-- INPUT PARAMETER SMOOTHING BETA -->
+                    <div class="col-sm-3">
+                         <div class="form-group">
+                             <label class="control-label">Smoothing Beta</label>
+                             <input value="0" type="number" name="beta" id="beta" class="form-control" min="0" max="1" step="0.01" placeholder="0">
+                         </div>
+                     </div>
+                         <div class="col-sm-1"></div>
+
+                        <!-- INPUT PARAMETER SMOOTHING GAMMA -->
+                    <div class="col-sm-3">
+                         <div class="form-group">
+                             <label class="control-label">Smoothing Gamma</label>
+                             <input value="0" type="number" name="gamma" id="gamma" class="form-control" min="0" max="1" step="0.01" placeholder="0">
+                         </div>
+                     </div>
+                         <div class="col-sm-1"></div>
+                    </div>
+
+                    <!-- INPUT PARAMETER N PERAMALAN -->
+                    <div class="col-sm-12">
+                         <div class="form-group col-sm-12">
+                             <label class="control-label">Target Peramalan</label>
+                             <input value=0 type="number" name="peramalan" id="peramalan" class="form-control" min="0" step="1" placeholder="0 Hari kedepan">
+                         </div>
+                        </div>
+
+
+                    <!-- BUTTON SUBMIT -->
+                    <div class="col-sm-12">
+                        <div class="col-sm-5">
+
+                            <a id="tampilkan" onclick="tampilkanData()" value="tampilkan" class="btn btn-block btn-info btn-rounded disabled">Tampilkan Data</a>
+                        </div>
+
+                        <div class="col-sm-2"></div>
+                  <div class="col-sm-5">
+                      <button id="ramalan" value="ramalan" class="btn btn-block btn-info btn-rounded disabled">Prediksi Ramalan</button>
+                        </div>
+
+                    </div>
+
+
+                </form>
+            </div>
+
+
+            </div>
+        </div>
+    <div class="col-md-3"></div>
+
+</div>
+
+
+   <!-- DATASET VIEW -->
+        <div id="dataview" style="display:none" class="panel panel-info block4">
+        <div class="panel-heading"> Dataset
+            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
+        </div>
+        <div class="panel-wrapper collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive border tableFixHead" id="tampilkanGrafik"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORECAST VIEW -->
+        <div id="forecast" style="display:none" class="panel panel-info block4">
+        <div class="panel-heading"> Hasil Prediksi Ramalan
+            <div class="pull-right"><a href="#" data-perform="panel-collapse"><i class="ti-minus"></i></a></div>
+        </div>
+        <div class="panel-wrapper collapse in" aria-expanded="true">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive border tableFixHead" id="hasilGrafik"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4" for="mape"><h2>Nilai MAPE</h2></label>
+                                <div class="col-md-8">
+                                    <input id="mape" value="0" type="number" class="form-control" placeholder="Nilai MAPE" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block additional %}
+<script type="text/javascript" src="{% static 'js/fileUpload.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/forecasting.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/tampilkanData.js' %}"></script>
+{% endblock additional %}
